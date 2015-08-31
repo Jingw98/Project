@@ -1,3 +1,3 @@
-# 206_project
-206 project
+# Project
+project
 #test commit
