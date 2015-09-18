@@ -100,7 +100,7 @@ public class MainView {
 
 		String[] test = { "A            ", "B", "B", "B", "B", "B", "B", "B",
 				"B", "B", "B", "B", "B", "B", "B", "a" };
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+	
 		JList list = new JList(test);
 
 		
@@ -108,15 +108,7 @@ public class MainView {
 		frame.getContentPane().add(scp, BorderLayout.EAST);
 		
 		JPanel panelSouth = new JPanel();
-		/**
-		panelSouth = new javax.swing.JPanel() {
-			public void paintComponent(Graphics g) {
-				ImageIcon icon = new ImageIcon(System.getProperty("user.dir")
-						+ "/res/test.PNG");
-				g.drawImage(icon.getImage(), 0, 0, panelSouth.getSize().width,
-						panelSouth.getSize().height, panelSouth);
-			}
-		};*/
+	
 		frame.getContentPane().add(panelSouth, BorderLayout.SOUTH);
 		panelSouth.setLayout(new BorderLayout());
 		panelSouth.setOpaque(false);
