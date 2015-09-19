@@ -1,4 +1,4 @@
-package projectGUI;
+
 
 import java.awt.Color;
 import java.awt.GradientPaint;
