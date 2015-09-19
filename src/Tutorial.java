@@ -1,5 +1,7 @@
+package se206_a3;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -10,15 +12,20 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
@@ -31,7 +38,8 @@ public class Tutorial {
 	private static JFileChooser fileSelector ;
 	private static File videoFile;
 	private static File currentDir;
-    private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
+    private  EmbeddedMediaPlayerComponent mediaPlayerComponent;
+    private JSlider move, voice;
     JPanel contentPane = new JPanel(new BorderLayout());
     JButton pauseButton = new JButton("Pause");
     JPanel controlsPane = new JPanel();
@@ -40,10 +48,12 @@ public class Tutorial {
     JButton  openButton = new JButton("Open");
     JButton muteButton = new JButton("Mute");
     JButton saveMP3Button = new JButton("Save as Mp3");
-    JLabel time = new JLabel();
+    static JLabel videoTime = new JLabel();
     JTextField inputField = new JTextField();
-    Timer timer, forwardTimer, backwardTimer;
-    int forwardSpeed = 2500, backwardSpeed = -2500;
+    Timer videoTimer, forwardTimer, backwardTimer;
+    int forwardSpeed = 500, backwardSpeed = -500;
+    static String totalTime = "00:00:00";
+	static String playTime ="00:00:00";
     
     
     
@@ -85,11 +95,18 @@ public class Tutorial {
         
         mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
         
+        
+        
         //Open file
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	playVideo();
+            	try {
+					playVideo();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             	mediaPlayerComponent.getMediaPlayer().mute(false);
             }
         });
@@ -130,7 +147,7 @@ public class Tutorial {
         controlsPane.add( muteButton);
         
         //Skip backward
-        backwardTimer = new Timer(500, new ActionListener() {
+        backwardTimer = new Timer(50, new ActionListener() {
         	public void actionPerformed(ActionEvent e){
         		mediaPlayerComponent.getMediaPlayer().skip(backwardSpeed);
             }
@@ -145,12 +162,12 @@ public class Tutorial {
             	mediaPlayerComponent.getMediaPlayer().mute(true);
             	
             	if(!backwardTimer.isRunning()){
-            		backwardSpeed = -2500;
+            		backwardSpeed = -500;
             	}else{
-            		if(backwardSpeed < -30000){
-            			backwardSpeed = backwardSpeed - 2500;
+            		if(backwardSpeed < -3000){
+            			backwardSpeed = backwardSpeed - 250;
             		}else{
-            			backwardSpeed = -2500;
+            			backwardSpeed = -500;
             		}
             	}
             	backwardTimer.start();
@@ -177,12 +194,12 @@ public class Tutorial {
             	mediaPlayerComponent.getMediaPlayer().mute(true);
             	
             	if(!forwardTimer.isRunning()){
-            		forwardSpeed = 2500;
+            		forwardSpeed = 500;
             	}else{
-            		if(forwardSpeed < 30000){
-            			forwardSpeed = forwardSpeed + 2500;
+            		if(forwardSpeed < 3000){
+            			forwardSpeed = forwardSpeed + 250;
             		}else{
-            			forwardSpeed = 2500;
+            			forwardSpeed = 500;
             		}
             	}
             	forwardTimer.start();
@@ -191,16 +208,17 @@ public class Tutorial {
         skipForwardButton.setEnabled(false);
         controlsPane.add(skipForwardButton);
         
-        //
-        controlsPane.add(time);
-        timer = new Timer(500, new ActionListener() {
+        //Time
+        videoTimer= new Timer(50, new ActionListener() {
         	public void actionPerformed(ActionEvent e){
-            	DateFormat format = new SimpleDateFormat("HH:mm:ss");
-            	Date date = new Date();
-            	time.setText(format.format(date));
+        		
+        		videoTime .setText(playTime + " / " + totalTime);
             }
         });
-        timer.start();
+     
+        
+        controlsPane.add( videoTime );
+        
         
         //Text input field
         inputField.addActionListener(new ActionListener() {
@@ -230,6 +248,22 @@ public class Tutorial {
             }
         });
         controlsPane.add(inputField);
+        
+        //Volume
+        voice = new JSlider(0, 100, 0); 
+		// voice.setOpaque(false);
+		voice.setPreferredSize(new Dimension(120, 20));
+		voice.setValue(50);
+		voice.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				mediaPlayerComponent.getMediaPlayer().setVolume(voice.getValue() * 2);
+			}
+	    });
+		//voice.setUI(new SliderUI());
+		//!!!!!!!!!
+		controlsPane.add(voice);
         
         //Save as MP3
         saveMP3Button.addActionListener(new ActionListener() {
@@ -263,19 +297,26 @@ public class Tutorial {
 
     }
     
-    private void playVideo(){
+    private void playVideo() throws IOException{
     	File selectedFile = null;
     	fileSelector.setSelectedFile(null);
     	fileSelector.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileSelector.showSaveDialog(null);
 		selectedFile = fileSelector.getSelectedFile();
-		mediaPlayerComponent.getMediaPlayer().mute(false);
+		//mediaPlayerComponent.getMediaPlayer().mute(false);
 		if (selectedFile.exists() ){
 			videoFile = selectedFile;
 			mediapath = videoFile.getAbsolutePath();
-			mediaPlayerComponent.getMediaPlayer().playMedia(mediapath);
+			mediaPlayerComponent.getMediaPlayer().startMedia(mediapath);
+			mediaPlayerComponent.getMediaPlayer().mute(false);
+			mediaPlayerComponent.getMediaPlayer().setVolume(voice.getValue() * 2);
+			playTime = "00:00:00";
+			stdoutBuffered = CallBash.callBashBuffer("ffmpeg -i " + videoFile.getAbsolutePath() +  " 2>&1 | grep \"Duration\"");
+			setTotalTime(stdoutBuffered .readLine());
+			
 			enableButtons();
 		}
+		
 		
     }
     
@@ -290,4 +331,26 @@ public class Tutorial {
     	stdoutBuffered = CallBash.callBashBuffer("pwd");
     	currentDir = new File (stdoutBuffered .readLine());
     }
+    
+    public static void setTotalTime(String str){
+    	String msg = "";
+   	 Matcher m = Pattern.compile("  Duration: \\w+:\\w+:\\w+").matcher(str);
+   	 while(m.find()){
+   		 msg = m.group();
+   		 msg = msg.replace("  Duration: ", "");
+   	 }
+      totalTime = msg;
+      videoTime .setText(playTime + " / " + totalTime);
+   }
+    
+    public static int runtimeToSecond(String str){
+        String[] hms=str.trim().split(":");
+        if(hms.length!=3){
+            return 0;
+        }
+        int time=Integer.valueOf(hms[0])*60*60+Integer.valueOf(hms[1])*60+Integer.valueOf(hms[2]);
+        return time;
+    }
+    
+    
 }
