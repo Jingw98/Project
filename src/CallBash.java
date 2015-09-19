@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 
+=======
+package se206_a3;
+>>>>>>> 267d0dea3659f54dac30fa1eaa7522cbd1706795
 
 import java.io.BufferedReader;
 import java.io.IOException;
