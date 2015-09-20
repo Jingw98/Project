@@ -1,0 +1,9 @@
+git config --global user.name "JeffMc"
+git config --global user.email "jeffmc196@gmail.com"
+
+git clone https://github.com/Jingw98/Project.git
+
+git add "file name";
+git commit -m "comment";
+git remote -v;
+git push -u origin master
