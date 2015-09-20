@@ -1,3 +1,4 @@
+package se206_a3;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -37,8 +38,8 @@ public class Player {
 	JPanel panelFestival;
 	JPanel panelSouth;
 	JSlider move;
-	JPanel panelFunction;
-	JButton stop, backward, forward, play;
+	JPanel panelFunction, panelVolume;
+	JButton stop, backward, forward, play, mute;
 	Timer timer, forwardTimer, backwardTimer;
 	int forwardSpeed = 500, backwardSpeed = -500;
 	// int width;
@@ -117,12 +118,45 @@ public class Player {
 				mediaPlayerComponent.getMediaPlayer().skip(backwardSpeed);
 			}
 		});
+		
+		     //volume panel in south
+		panelVolume=volumePanel();
+		panelSouth.add(panelVolume, BorderLayout.EAST);
 
 		contentPane.add(panelSouth, BorderLayout.SOUTH);
 		frame.setContentPane(contentPane);
 		frame.setVisible(true);
 	}
 
+	
+	private JPanel volumePanel() {
+		JPanel panelVolume =new JPanel();
+		 mute = new JButton();
+		 mute.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	            	if(!mediaPlayerComponent.getMediaPlayer().isMute()){
+	            		mediaPlayerComponent.getMediaPlayer().mute(true);
+	            		setButton(mute,"14.png");
+	            		
+	            	}else{
+	            		mediaPlayerComponent.getMediaPlayer().mute(false);
+	            		setButton(mute,"6.png");
+	            	}
+	            	
+	            }
+	        });
+		mute.setEnabled(false);
+		panelVolume.add(mute);
+		setButton(mute, "6.png");
+		JSlider voice = new JSlider(0, 100, 0); 
+		 voice.setOpaque(false);
+		voice.setPreferredSize(new Dimension(120, 20));
+		voice.setValue(100);
+		panelVolume.add(voice);
+		return panelVolume;
+	}
+	
 	private JPanel feativalPanel() {
 		// text field and button in festival panel
 		JPanel panelFestival = new JPanel();
@@ -142,7 +176,18 @@ public class Player {
 	private JPanel functionPanel() {
 		panelFunction = new JPanel();
 		stop = new JButton();
-
+stop.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+    	mediaPlayerComponent.getMediaPlayer().stop();
+    	 stop.setEnabled(false);
+    	play.setEnabled(false);
+     	backward.setEnabled(false);
+         forward.setEnabled(false);
+         mute.setEnabled(false);
+        // saveMP3Button.setEnabled(false);
+    }
+});
 		stop.setEnabled(false);
 		panelFunction.add(stop);
 
@@ -296,11 +341,7 @@ public class Player {
 
 	}
 
-	/**
-	 * private void enableButtons(){ pauseButton.setEnabled(true);
-	 * skipBackwardButton.setEnabled(true); skipForwardButton.setEnabled(true);
-	 * muteButton.setEnabled(true); }
-	 */
+	
 
 	private void initialSound() throws IOException {
 		stdoutBuffered = CallBash
@@ -327,6 +368,7 @@ public class Player {
 		setButton(play, "4.png");
 		backward.setEnabled(true);
 		forward.setEnabled(true);
-		// mute.setEnabled(true);
+		mute.setEnabled(true);
+		stop.setEnabled(true);
 	}
 }
