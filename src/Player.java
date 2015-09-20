@@ -208,7 +208,8 @@ public class Player {
       			playTime = secondToRuntime(Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getTime())) / 1000) ;
           		videoTime .setText(playTime + " / " + totalTime);
           		sliderSkip = false;
-          		move.setValue(runtimeToSecond(playTime) * 100 / runtimeToSecond(totalTime));
+          		move.setValue((int) mediaPlayerComponent.getMediaPlayer().getTime());
+          		//System.out.println(mediaPlayerComponent.getMediaPlayer().getTime()+"mediaPlayerComponent.getMediaPlayer().getTime()");
           		sliderSkip = true;
       		}
       		
@@ -345,6 +346,8 @@ stop.addActionListener(new ActionListener() {
 	private JSlider moveSlider() {
 		final JSlider move = new JSlider();
 		move.setValue(0);
+		//move.setMaximum((int) mediaPlayerComponent.getMediaPlayer().getLength());
+		//System.out.println("length first="+mediaPlayerComponent.getMediaPlayer().getLength());
 		move.setEnabled(true);
 		move.addMouseListener(new MouseListener() {
 
@@ -354,11 +357,12 @@ stop.addActionListener(new ActionListener() {
 				move.setUI(new MetalSliderUI() {
 					protected void scrollDueToClickInTrack(int direction) {
 						if (mediaPlayerComponent.getMediaPlayer() != null) {
-							int totalTime = Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getLength()));
-						int	moveValue = move.getValue();
+							//int totalTime = Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getLength()));
+						    int	moveValue = move.getValue();
 							if (move.getOrientation() == JSlider.HORIZONTAL) {
 								moveValue = this.valueForXPosition(move
 										.getMousePosition().x);
+								System.out.println(moveValue);
 							}
 							move.setValue(moveValue);
 							mediaPlayerComponent.getMediaPlayer().setTime(moveValue);
@@ -400,20 +404,6 @@ stop.addActionListener(new ActionListener() {
 			}
 
 		});
-
-		/**move.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				if (sliderSkip){
-					int totalTime = Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getLength()));
-					int jump = (totalTime * move.getValue()) / 100;
-					mediaPlayerComponent.getMediaPlayer().setTime(new Long(jump));
-					playTime = secondToRuntime(Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getTime())) / 1000) ;
-				}
-				
-			}
-	    });*/
-		
 		
 		return move;
 
@@ -463,10 +453,10 @@ stop.addActionListener(new ActionListener() {
 		System.out.println("absolutPath: "+mediapath);
 			mediaPlayerComponent.getMediaPlayer().startMedia(mediapath);
 			playTime = "00:00:00";
-			//stdoutBuffered = CallBash.callBashBuffer("ffmpeg -i " + mediapath +  " 2>&1 | grep \"Duration\"");
-			System.out.println(mediaPlayerComponent.getMediaPlayer().getLength());
+			
+			
 			setTotalTime((int)mediaPlayerComponent.getMediaPlayer().getLength());
-			//System.out.println(totalTime);
+			
 			videoTimer.start();
 			enableButtons();
 		}
@@ -566,5 +556,7 @@ stop.addActionListener(new ActionListener() {
 			}
 
 			totalTime="0" + hours + ":" + m + ":" + s;
+			move.setMaximum((int) mediaPlayerComponent.getMediaPlayer().getLength());
+			System.out.println("length first="+mediaPlayerComponent.getMediaPlayer().getLength());
 }
 }
