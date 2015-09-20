@@ -7,16 +7,21 @@ import java.awt.TextField;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -24,6 +29,9 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.metal.MetalSliderUI;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 
@@ -40,8 +48,15 @@ public class Player {
 	JSlider move;
 	JPanel panelFunction, panelVolume;
 	JButton stop, backward, forward, play, mute;
-	Timer timer, forwardTimer, backwardTimer;
-	int forwardSpeed = 500, backwardSpeed = -500;
+	Timer timer, forwardTimer, backwardTimer, videoTimer;
+	int forwardSpeed = 500, backwardSpeed = -500, moveValue;
+	 JLabel videoTime ;
+	 
+	    boolean sliderSkip = true;
+	  
+	    int timerCondition = 1;
+	     String totalTime = "00:00:00";
+		String playTime ="00:00:00";
 	// int width;
 	private EmbeddedMediaPlayerComponent mediaPlayerComponent;
 
@@ -105,6 +120,9 @@ public class Player {
 		setButton(forward, "1.png");
 		setButton(backward, "9.png");
 		setButton(stop, "11.png");
+		//Time label
+	      videoTime=time();
+	      panelFunction.add(videoTime);
 		panelSouth.add(panelFunction, BorderLayout.WEST);
 
 		// timer
@@ -122,7 +140,9 @@ public class Player {
 		     //volume panel in south
 		panelVolume=volumePanel();
 		panelSouth.add(panelVolume, BorderLayout.EAST);
-
+		
+		
+   
 		contentPane.add(panelSouth, BorderLayout.SOUTH);
 		frame.setContentPane(contentPane);
 		frame.setVisible(true);
@@ -146,15 +166,55 @@ public class Player {
 	            	
 	            }
 	        });
+		
+
+
 		mute.setEnabled(false);
 		panelVolume.add(mute);
 		setButton(mute, "6.png");
-		JSlider voice = new JSlider(0, 100, 0); 
+		final JSlider voice = new JSlider(0, 100, 0); 
 		 voice.setOpaque(false);
 		voice.setPreferredSize(new Dimension(120, 20));
-		voice.setValue(100);
+		
+		voice.setValue(50);
+		voice.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				mediaPlayerComponent.getMediaPlayer().setVolume(voice.getValue() * 2);
+				
+				 if (mediaPlayerComponent.getMediaPlayer().getVolume() == 0) {
+					setButton(mute, "14.png");
+				}
+				 else if (mediaPlayerComponent.getMediaPlayer().getVolume() != 0) {
+						setButton(mute, "6.png");
+					}
+			}
+	    });
+		
 		panelVolume.add(voice);
 		return panelVolume;
+	}
+	
+	private JLabel time(){
+		videoTime = new JLabel();
+	  videoTime .setText(playTime + " / " + totalTime);
+      videoTimer= new Timer(100, new ActionListener() {
+      	public void actionPerformed(ActionEvent e){
+      		if(runtimeToSecond(playTime) >= runtimeToSecond(totalTime)){
+      			playTime = "00:00:00";
+      			videoTimer.stop();
+      		}else{
+      			playTime = secondToRuntime(Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getTime())) / 1000) ;
+          		videoTime .setText(playTime + " / " + totalTime);
+          		sliderSkip = false;
+          		move.setValue(runtimeToSecond(playTime) * 100 / runtimeToSecond(totalTime));
+          		sliderSkip = true;
+      		}
+      		
+          }
+      });
+      return videoTime;
 	}
 	
 	private JPanel feativalPanel() {
@@ -225,27 +285,24 @@ stop.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (forwardTimer.isRunning()) {
-
 					forwardTimer.stop();
-
 					mediaPlayerComponent.getMediaPlayer().mute(false);
 					mediaPlayerComponent.getMediaPlayer().play();
 					setButton(play, "4.png");
 				} else if (backwardTimer.isRunning()) {
 					backwardTimer.stop();
-
 					mediaPlayerComponent.getMediaPlayer().mute(false);
 					mediaPlayerComponent.getMediaPlayer().play();
 					setButton(play, "4.png");
-
 				} else {
-
 					if (mediaPlayerComponent.getMediaPlayer().isPlaying()) {
 						setButton(play, "12.png");
 						mediaPlayerComponent.getMediaPlayer().pause();
+						videoTimer.stop();
 					} else {
 						mediaPlayerComponent.getMediaPlayer().play();
 						setButton(play, "4.png");
+						videoTimer.start();
 					}
 				}
 			}
@@ -268,7 +325,7 @@ stop.addActionListener(new ActionListener() {
             		forwardSpeed = 500;
             	}else{
             		if(forwardSpeed < 3000){
-            			forwardSpeed = forwardSpeed + 550;
+            			forwardSpeed = forwardSpeed + 500;
             		}else{
             			forwardSpeed = 500;
             		}
@@ -286,7 +343,78 @@ stop.addActionListener(new ActionListener() {
 	}
 
 	private JSlider moveSlider() {
-		JSlider move = new JSlider();
+		final JSlider move = new JSlider();
+		move.setValue(0);
+		move.setEnabled(true);
+		move.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				move.setUI(new MetalSliderUI() {
+					protected void scrollDueToClickInTrack(int direction) {
+						if (mediaPlayerComponent.getMediaPlayer() != null) {
+							int totalTime = Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getLength()));
+						int	moveValue = move.getValue();
+							if (move.getOrientation() == JSlider.HORIZONTAL) {
+								moveValue = this.valueForXPosition(move
+										.getMousePosition().x);
+							}
+							move.setValue(moveValue);
+							mediaPlayerComponent.getMediaPlayer().setTime(moveValue);
+						} else {
+							move.setValue(0);
+						}
+					}
+				});
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				if (mediaPlayerComponent.getMediaPlayer() != null) {
+					mediaPlayerComponent.getMediaPlayer().setTime(move.getValue());
+					playTime = secondToRuntime(Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getTime())) / 1000) ;
+				} else {
+					move.setValue(0);
+				}
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+
+		/**move.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (sliderSkip){
+					int totalTime = Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getLength()));
+					int jump = (totalTime * move.getValue()) / 100;
+					mediaPlayerComponent.getMediaPlayer().setTime(new Long(jump));
+					playTime = secondToRuntime(Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getTime())) / 1000) ;
+				}
+				
+			}
+	    });*/
+		
+		
 		return move;
 
 	}
@@ -305,7 +433,12 @@ stop.addActionListener(new ActionListener() {
 		item1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				playVideo();
+				try {
+					playVideo();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				mediaPlayerComponent.getMediaPlayer().mute(false);
 			}
 		});
@@ -317,18 +450,24 @@ stop.addActionListener(new ActionListener() {
 
 	}
 
-	private void playVideo() {
+	private void playVideo() throws IOException {
 
 		File selectedFile = null;
 		fileSelector.setSelectedFile(null);
 		fileSelector.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileSelector.showSaveDialog(null);
 		selectedFile = fileSelector.getSelectedFile();
-		mediaPlayerComponent.getMediaPlayer().mute(false);
-		if (selectedFile.exists()) {
+		if (selectedFile.exists() ){
 			videoFile = selectedFile;
-			String mediapath = videoFile.getAbsolutePath();
-			mediaPlayerComponent.getMediaPlayer().playMedia(mediapath);
+		String	mediapath = videoFile.getAbsolutePath();
+		System.out.println("absolutPath: "+mediapath);
+			mediaPlayerComponent.getMediaPlayer().startMedia(mediapath);
+			playTime = "00:00:00";
+			//stdoutBuffered = CallBash.callBashBuffer("ffmpeg -i " + mediapath +  " 2>&1 | grep \"Duration\"");
+			System.out.println(mediaPlayerComponent.getMediaPlayer().getLength());
+			setTotalTime((int)mediaPlayerComponent.getMediaPlayer().getLength());
+			//System.out.println(totalTime);
+			videoTimer.start();
 			enableButtons();
 		}
 
@@ -371,4 +510,61 @@ stop.addActionListener(new ActionListener() {
 		mute.setEnabled(true);
 		stop.setEnabled(true);
 	}
+	
+	  public static String secondToRuntime(int time){
+	    	StringBuffer buffer = new StringBuffer();
+	    	if(time >= 3600){
+	        		if(time / 3600 > 10){
+	        			buffer.append(Integer.toString(time/3600) + ":");
+	        		}else{
+	        			buffer.append("0" + Integer.toString(time/3600) + ":");
+	        		}
+	    		time = time - 3600 * (time/3600);
+	    	}else{
+	    		buffer.append("00:");
+	    	}
+	    	
+	    	if(time >=  60){
+	    		if(time / 60 > 10){
+	    			buffer.append(Integer.toString(time/60) + ":");
+	    		}else{
+	    			buffer.append("0"+Integer.toString(time/60) + ":");
+	    		}
+	    		time = time - 60* (time/60);
+	    	}else{
+	    		buffer.append("00:");
+	    	}
+	    	
+	    	if(time >= 10){
+				buffer.append(Integer.toString(time));
+			}else{
+				buffer.append("0"+Integer.toString(time));
+			}
+	    	return buffer.toString();
+	   }
+	  
+	 private int runtimeToSecond(String str){
+	        String[] hms=str.trim().split(":");
+	        if(hms.length!=3){
+	            return 0;
+	        }
+	        int time=Integer.valueOf(hms[0])*60*60+Integer.valueOf(hms[1])*60+Integer.valueOf(hms[2]);
+	        return time;
+	    }
+	  private void setTotalTime(int time){
+		  int t = time / 1000;
+			int hours = t / 3600;
+			int minutes = t / 60 - 60 * hours;
+			int seconds = (t % 3600) % 60;
+			String m = Integer.toString(minutes), s = Integer
+					.toString(seconds);
+			if (minutes < 10) {
+				m = "0" + Integer.toString(minutes);
+			}
+			if (seconds < 10) {
+				s = "0" + Integer.toString(seconds);
+			}
+
+			totalTime="0" + hours + ":" + m + ":" + s;
+}
 }
