@@ -1,13 +1,11 @@
-<<<<<<< HEAD
-
-=======
 package se206_a3;
->>>>>>> 267d0dea3659f54dac30fa1eaa7522cbd1706795
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import javax.swing.JFrame;
 
 public class CallBash {
 	
@@ -33,6 +31,15 @@ public class CallBash {
 	public static void callBashVoid(String cmd) throws IOException{
 		ProcessBuilder builder =new ProcessBuilder("/bin/bash", "-c", cmd);
 		Process process = builder.start();
+	}
+	
+	//newwwwwwwwwwwwwwwwwwwwwwwww
+	public static void callBashVoidWait(String cmd) throws IOException, InterruptedException{
+		
+		ProcessBuilder builder =new ProcessBuilder("/bin/bash", "-c", cmd);
+		Process process = builder.start();
+		process.waitFor();
+		
 	}
 	
 	
