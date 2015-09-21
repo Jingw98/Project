@@ -1,9 +1,7 @@
 package se206_a3;
 
 import java.awt.BorderLayout;
-
 import java.awt.Dimension;
-
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -40,10 +39,11 @@ public class Player {
 	JFrame frame;
 	JPanel contentPane;
 	JMenuBar menuBar;
-	JFileChooser fileSelector;
+	static JFileChooser fileSelector;
 	BufferedReader stdoutBuffered;
-	File currentDir;
-	File videoFile;
+	static File currentDir;
+	static File videoFile;
+	static String mediaPath="";
 	JPanel panelFestival;
 	JPanel panelSouth;
 	JSlider move, voice;
@@ -226,22 +226,30 @@ public class Player {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					System.out.println(textField.getText());
-					stdoutBuffered = CallBash.callBashBuffer("echo \""
-							+ textField.getText() + "\" |  wc -w");
-					int word = Integer.parseInt(stdoutBuffered.readLine());
-					if (word < 40 && word > 0) {
+					String input = textField.getText();
+					int word = input.length();
+					if (word <= 40 && word > 0) {
 
-						CallBash.callBashVoid("echo \"" + textField.getText()
+						CallBash.callBashVoid("echo \"" + input
 								+ "\" |  festival --tts");
 						CallBash.callBashVoid("rm -rfv ./.soundFile/*");
 						CallBash.callBashVoid("echo \""
-								+ textField.getText()
+								+ input
 								+ "\" |  text2wave -o ./.soundFile/audio.wav; lame ./.soundFile/audio.wav ./.soundFile/audio.mp3");
 						festival.setEnabled(true);
-
+					  
 					} else {
-						// show error window
+						if (word == 0) {
+							// show error window
+							JOptionPane.showMessageDialog(contentPane,
+									"Words can not be empty!", null,
+									JOptionPane.INFORMATION_MESSAGE);
+						}
+						else{
+						JOptionPane.showMessageDialog(contentPane,
+								"Words can not be over 40!", null,
+								JOptionPane.INFORMATION_MESSAGE);
+						}
 						festival.setEnabled(false);
 					}
 
@@ -260,8 +268,10 @@ public class Player {
 			public void actionPerformed(ActionEvent e) {
 				File directoryFile;
 				fileSelector.setSelectedFile(null);
+			
 				fileSelector
-						.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+						.setFileSelectionMode(JFileChooser.SAVE_DIALOG | JFileChooser.DIRECTORIES_ONLY);  
+				
 				fileSelector.showSaveDialog(null);
 				directoryFile = fileSelector.getSelectedFile();
 				String directoryPath = directoryFile.getAbsolutePath();
@@ -397,9 +407,6 @@ public class Player {
 	private JSlider moveSlider() {
 		final JSlider move = new JSlider();
 		move.setValue(0);
-		// move.setMaximum((int)
-		// mediaPlayerComponent.getMediaPlayer().getLength());
-		// System.out.println("length first="+mediaPlayerComponent.getMediaPlayer().getLength());
 		move.setEnabled(true);
 		move.addMouseListener(new MouseListener() {
 
@@ -467,7 +474,6 @@ public class Player {
 	}
 
 	private JMenuBar menuBar() {
-		// Menu Bar
 		JMenuBar menubar = new JMenuBar();
 
 		JMenu menu1 = new JMenu("File");
@@ -477,6 +483,9 @@ public class Player {
 
 		menubar.add(menu2);
 		JMenuItem item1 = new JMenuItem("Open File");
+		JMenuItem item2 = new JMenuItem("Add Audio");
+		
+		
 		item1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -491,10 +500,19 @@ public class Player {
 				mediaPlayerComponent.getMediaPlayer().mute(false);
 			}
 		});
-
+		
+		item2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			new AddAudio();
+			
+		}
+	});
+//((Object) menu1).setDefaultLightWeightPopupEnabled(false);
 		menu1.add(item1);
-
-		// menu1.addSeparator();
+		menu2.add(item2);
+	
+		
 		return menubar;
 
 	}
@@ -503,9 +521,9 @@ public class Player {
 
 		if (selectedFile.exists()) {
 			videoFile = selectedFile;
-			String mediapath = videoFile.getAbsolutePath();
+			 mediaPath = videoFile.getAbsolutePath();
 
-			mediaPlayerComponent.getMediaPlayer().startMedia(mediapath);
+			mediaPlayerComponent.getMediaPlayer().startMedia(mediaPath);
 			mediaPlayerComponent.getMediaPlayer().mute(false);
 			mediaPlayerComponent.getMediaPlayer().setVolume(
 					voice.getValue() * 2);
@@ -621,7 +639,7 @@ public class Player {
 				+ mediaPlayerComponent.getMediaPlayer().getLength());
 	}
 
-	private File chooseFile(FileFilter filter, int mode, String fileType) {
+	public static File chooseFile(FileFilter filter, int mode, String fileType) {
 		fileSelector.setDialogTitle("Please select a " + fileType);
 		fileSelector.setFileFilter(filter);
 		fileSelector.setSelectedFile(null);
@@ -631,29 +649,19 @@ public class Player {
 
 	}
 
-	class VideoProcesser extends SwingWorker<Void, Integer> {
-		String command;
-
-		public VideoProcesser(String cmd) {
-			command = cmd;
-		}
-
-		@Override
-		protected Void doInBackground() throws Exception {
-			CallBash.callBashVoidWait(command);
-			return null;
-		}
-
-		@Override
-		protected void done() {
-
-			try {
-				AddMP3.generateDone();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+	
+	public static  File getVideoFile(){
+		File file;
+		file=videoFile;
+		return file;
+		
 	}
+	public static  String getMediaPath(){
+		String dir="";
+		dir=mediaPath;
+		return dir;
+		
+	}
+	
+	//public static
 }
