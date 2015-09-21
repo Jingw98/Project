@@ -277,8 +277,14 @@ public class Player {
 				fileSelector
 						.setFileSelectionMode(JFileChooser.SAVE_DIALOG | JFileChooser.DIRECTORIES_ONLY);  
 				
-				fileSelector.showSaveDialog(null);
+				
+				//if
+				int returnVal=fileSelector.showSaveDialog(null);
+
+				if(returnVal== JFileChooser.APPROVE_OPTION){
+					
 				directoryFile = fileSelector.getSelectedFile();
+				
 				String directoryPath = directoryFile.getAbsolutePath();
 
 				try {
@@ -289,6 +295,8 @@ public class Player {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				}
+				
 			}
 		});
 		festival.setPreferredSize(new Dimension(40, 20));
