@@ -1,9 +1,7 @@
 package main;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -29,42 +27,32 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.metal.MetalSliderUI;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 
 public class Player {
-	static JFrame frame;
-	JPanel contentPane;
-	JMenuBar menuBar;
 	public static JFileChooser fileSelector;
-	BufferedReader stdoutBuffered;
 	public static File currentDir;
+	static JFrame frame;
+	static String mediaPath = "", totalTime = "00:00:00",
+			playTime = "00:00:00";
 	static File videoFile;
-	static String mediaPath="";
-	JPanel panelFestival;
-	JPanel panelSouth;
+	BufferedReader stdoutBuffered;
+	JPanel contentPane, panelSouth, panelFestival, panelFunction, panelVolume;
+	JMenuBar menuBar;
 	JSlider move, voice;
-	
-	JPanel panelFunction, panelVolume;
 	JButton stop, backward, forward, play, mute, festival;
 	Timer timer, forwardTimer, backwardTimer, videoTimer;
-	int forwardSpeed = 500, backwardSpeed = -500, moveValue;
 	JLabel videoTime;
 	JTextField textField;
-
 	boolean sliderSkip = true;
-
-	int timerCondition = 1;
-	String totalTime = "00:00:00";
-	String playTime = "00:00:00";
-	// int width;
+	int forwardSpeed = 500, backwardSpeed = -500, moveValue,
+			timerCondition = 1;
 	private EmbeddedMediaPlayerComponent mediaPlayerComponent;
 
 	public Player() throws IOException {
@@ -93,9 +81,6 @@ public class Player {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
-		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
-		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 
 		// player
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
@@ -151,6 +136,7 @@ public class Player {
 		contentPane.add(panelSouth, BorderLayout.SOUTH);
 		frame.setContentPane(contentPane);
 		frame.setVisible(true);
+
 	}
 
 	private JPanel volumePanel() {
@@ -203,7 +189,8 @@ public class Player {
 		videoTime.setText(playTime + " / " + totalTime);
 		videoTimer = new Timer(100, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (Time.runtimeToSecond(playTime) >= Time.runtimeToSecond(totalTime)) {
+				if (Time.runtimeToSecond(playTime) >= Time
+						.runtimeToSecond(totalTime)) {
 					playTime = "00:00:00";
 					videoTimer.stop();
 				} else {
@@ -214,7 +201,7 @@ public class Player {
 					sliderSkip = false;
 					move.setValue((int) mediaPlayerComponent.getMediaPlayer()
 							.getTime());
-					// System.out.println(mediaPlayerComponent.getMediaPlayer().getTime()+"mediaPlayerComponent.getMediaPlayer().getTime()");
+
 					sliderSkip = true;
 				}
 
@@ -242,18 +229,17 @@ public class Player {
 								+ input
 								+ "\" |  text2wave -o ./.soundFile/audio.wav; lame ./.soundFile/audio.wav ./.soundFile/audio.mp3");
 						festival.setEnabled(true);
-					  
+
 					} else {
 						if (word == 0) {
 							// show error window
 							JOptionPane.showMessageDialog(contentPane,
 									"Words can not be empty!", null,
 									JOptionPane.INFORMATION_MESSAGE);
-						}
-						else{
-						JOptionPane.showMessageDialog(contentPane,
-								"Words can not be over 40!", null,
-								JOptionPane.INFORMATION_MESSAGE);
+						} else {
+							JOptionPane.showMessageDialog(contentPane,
+									"Words can not be over 40!", null,
+									JOptionPane.INFORMATION_MESSAGE);
 						}
 						festival.setEnabled(false);
 					}
@@ -273,30 +259,28 @@ public class Player {
 			public void actionPerformed(ActionEvent e) {
 				File directoryFile;
 				fileSelector.setSelectedFile(null);
-			
-				fileSelector
-						.setFileSelectionMode(JFileChooser.SAVE_DIALOG | JFileChooser.DIRECTORIES_ONLY);  
-				
-				
-				//if
-				int returnVal=fileSelector.showSaveDialog(null);
 
-				if(returnVal== JFileChooser.APPROVE_OPTION){
-					
-				directoryFile = fileSelector.getSelectedFile();
-				
-				String directoryPath = directoryFile.getAbsolutePath();
+				fileSelector.setFileSelectionMode(JFileChooser.SAVE_DIALOG
+						| JFileChooser.DIRECTORIES_ONLY);
 
-				try {
-					CallBash.callBashVoid("mv ./.soundFile/audio.mp3 "
-							+ directoryPath);
-					// mv /home/jeffmc/Uni/audio.mp3 /home/jeffmc/Uni/aaa
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				// if
+				int returnVal = fileSelector.showSaveDialog(null);
+
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+					directoryFile = fileSelector.getSelectedFile();
+
+					String directoryPath = directoryFile.getAbsolutePath();
+
+					try {
+						CallBash.callBashVoid("mv ./.soundFile/audio.mp3 "
+								+ directoryPath);
+
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				}
-				}
-				
+
 			}
 		});
 		festival.setPreferredSize(new Dimension(40, 20));
@@ -497,15 +481,15 @@ public class Player {
 		menubar.add(menu2);
 		JMenuItem item1 = new JMenuItem("Open File");
 		JMenuItem item2 = new JMenuItem("Add Audio");
-		
-		
+
 		item1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					playVideo(FileOperation.chooseFile(fileSelector,new FileNameExtensionFilter(
-							"Video File", "avi", "mp4"),
-							JFileChooser.FILES_ONLY, "video file"));
+					playVideo(FileOperation.chooseFile(fileSelector,
+							new FileNameExtensionFilter("Video File", "avi",
+									"mp4"), JFileChooser.FILES_ONLY,
+							"video file"));
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -513,19 +497,18 @@ public class Player {
 				mediaPlayerComponent.getMediaPlayer().mute(false);
 			}
 		});
-		
+
 		item2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			new AddAudio();
-			
-		}
-	});
-//((Object) menu1).setDefaultLightWeightPopupEnabled(false);
+				new AddAudio();
+
+			}
+		});
+
 		menu1.add(item1);
 		menu2.add(item2);
-	
-		
+
 		return menubar;
 
 	}
@@ -534,24 +517,24 @@ public class Player {
 
 		if (selectedFile.exists()) {
 			videoFile = selectedFile;
-			 mediaPath = videoFile.getAbsolutePath();
+			mediaPath = videoFile.getAbsolutePath();
 
 			mediaPlayerComponent.getMediaPlayer().startMedia(mediaPath);
 			mediaPlayerComponent.getMediaPlayer().mute(false);
 			mediaPlayerComponent.getMediaPlayer().setVolume(
 					voice.getValue() * 2);
 			playTime = "00:00:00";
-			//Time.setTotalTime((int) mediaPlayerComponent.getMediaPlayer()
-				//	.getLength());
-			totalTime=Time.setTotalTime((int) mediaPlayerComponent.getMediaPlayer().getLength());
-			move.setMaximum((int) ( mediaPlayerComponent).getMediaPlayer().getLength());
+			// Time.setTotalTime((int) mediaPlayerComponent.getMediaPlayer()
+			// .getLength());
+			totalTime = Time.setTotalTime((int) mediaPlayerComponent
+					.getMediaPlayer().getLength());
+			move.setMaximum((int) (mediaPlayerComponent).getMediaPlayer()
+					.getLength());
 			videoTimer.start();
 			enableButtons();
 		}
 
 	}
-
-	
 
 	private void setButton(JButton b, String dir) {
 		ImageIcon img = new ImageIcon(System.getProperty("user.dir") + "/res/"
@@ -573,21 +556,18 @@ public class Player {
 		stop.setEnabled(true);
 	}
 
-	
-
-	
-	public static  File getVideoFile(){
+	public static File getVideoFile() {
 		File file;
-		file=videoFile;
+		file = videoFile;
 		return file;
-		
+
 	}
-	public static  String getMediaPath(){
-		String dir="";
-		dir=mediaPath;
+
+	public static String getMediaPath() {
+		String dir = "";
+		dir = mediaPath;
 		return dir;
-		
+
 	}
-	
-	
+
 }

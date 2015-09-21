@@ -1,7 +1,5 @@
 package Function;
 
-import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-
 public class Time {
 	public static String secondToRuntime(int time) {
 		StringBuffer buffer = new StringBuffer();
@@ -58,10 +56,10 @@ public class Time {
 			s = "0" + Integer.toString(seconds);
 		}
 
-	return	 "0" + hours + ":" + m + ":" + s;
-		//move.setMaximum(( mediaPlayerComponent).getMediaPlayer().getLength());
-		
+		return "0" + hours + ":" + m + ":" + s;
+		// move.setMaximum((
+		// mediaPlayerComponent).getMediaPlayer().getLength());
+
 	}
 
-	
 }
