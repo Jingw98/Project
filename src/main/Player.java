@@ -240,7 +240,7 @@ public class Player {
 						CallBash.callBashVoid("rm -rfv ./.soundFile/*");
 						CallBash.callBashVoid("echo \""
 								+ input
-								+ "\" |  text2wave -o ./.soundFile/audio.wav; lame ./.soundFile/audio.wav ./.soundFile/audio.mp3");
+								+ "\" |  text2wave -o ./.soundFile/audio.wav; ffmpeg -i ./.soundFile/audio.wav -f mp3 ./.soundFile/audio.mp3");
 						festival.setEnabled(true);
 					  
 					} else {
@@ -266,40 +266,33 @@ public class Player {
 			}
 		});
 
-		textField.setPreferredSize(new Dimension(frame.getWidth() - 85, 20));
+		textField.setPreferredSize(new Dimension(frame.getWidth() - 120, 20));
 		festival = new JButton();
 		festival.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				File directoryFile;
 				fileSelector.setSelectedFile(null);
-			
+				fileSelector.setDialogTitle("Please select the save directory");
 				fileSelector
 						.setFileSelectionMode(JFileChooser.SAVE_DIALOG | JFileChooser.DIRECTORIES_ONLY);  
 				
-				
-				//if
-				int returnVal=fileSelector.showSaveDialog(null);
-
-				if(returnVal== JFileChooser.APPROVE_OPTION){
-					
+				fileSelector.showSaveDialog(null);
 				directoryFile = fileSelector.getSelectedFile();
-				
 				String directoryPath = directoryFile.getAbsolutePath();
 
 				try {
 					CallBash.callBashVoid("mv ./.soundFile/audio.mp3 "
 							+ directoryPath);
-					// mv /home/jeffmc/Uni/audio.mp3 /home/jeffmc/Uni/aaa
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				}
-				
 			}
 		});
-		festival.setPreferredSize(new Dimension(40, 20));
+		festival.setPreferredSize(new Dimension(100, 20));
+		festival.setEnabled(false);
+		festival.setText("Save");
 
 		panelFestival.add(textField);
 		panelFestival.add(festival, BorderLayout.AFTER_LINE_ENDS);
@@ -321,6 +314,10 @@ public class Player {
 				forward.setEnabled(false);
 				mute.setEnabled(false);
 				festival.setEnabled(false);
+				totalTime = "00:00:00";
+				playTime = "00:00:00";
+				videoTime.setText(playTime + " / " + totalTime);
+				move.setValue(0);
 			}
 		});
 		stop.setEnabled(false);
