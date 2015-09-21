@@ -18,30 +18,15 @@ public class Message_Wait extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Message_Wait frame = new Message_Wait();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
+	
 	public Message_Wait() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		//setBounds(100, 100, 300, 150);
 		setSize(300,150);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		
 		
 		JLabel lblNewLabel = new JLabel("Generating video file");
 		lblNewLabel.setBounds(0, 11, 284, 62);
@@ -54,6 +39,8 @@ public class Message_Wait extends JFrame {
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1.setBounds(0, 48, 284, 39);
 		contentPane.add(lblNewLabel_1);
+		contentPane.setLayout(null);
+		setVisible(true);
 	}
 
 }
