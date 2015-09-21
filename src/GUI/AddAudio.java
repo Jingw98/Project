@@ -11,6 +11,7 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
@@ -60,7 +61,14 @@ JTextField videoPath,mp3Path;
 		btnOverlap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	
+            	if(videoPath.getText().length()==0||mp3Path.getText().length()==0){
+        		JOptionPane.showMessageDialog(contentPane,
+    					"File Path Can Not Be Empty!", null,
+    					JOptionPane.WARNING_MESSAGE);
+        	
+        	
+        	
+        	}else{
             	if(videoFile.exists() && audioFile.exists()){
             		String videoPath = videoFile.getAbsolutePath();
             		System.out.println(videoPath);
@@ -75,9 +83,10 @@ JTextField videoPath,mp3Path;
                 		vp.execute();
                 		contentPane.setVisible(false);
             		}
-                		
+            	}	
 
             	}
+            	
             	
             	
             	
@@ -89,23 +98,31 @@ JTextField videoPath,mp3Path;
 		btnOverlay.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	if(videoPath.getText().length()==0||mp3Path.getText().length()==0){
+            		JOptionPane.showMessageDialog(contentPane,
+        					"File Path Can Not Be Empty!", null,
+        					JOptionPane.WARNING_MESSAGE);
             	
-            	if(videoFile.exists() && audioFile.exists()){
-            		String videoPath = videoFile.getAbsolutePath();
-            		System.out.println(videoPath);
-                	String audioPath = audioFile.getAbsolutePath();
-                	System.out.println(audioPath);
-                		
-                		int returnVal=save.showSaveDialog(null);
-                		if(returnVal== JFileChooser.APPROVE_OPTION){
-                			String path=save.getSelectedFile().getPath();
-                		wait= new Message_Wait();
-                		VideoProcesser vp = new VideoProcesser("ffmpeg -y -i " + videoPath + " -i " + audioPath + " -filter_complex amix=inputs=2 "+path);
-                		vp.execute();
-                		contentPane.setVisible(false);
-                		
-                		}
-            	}
+            	
+            	
+            	}else{
+            		if(videoFile.exists() && audioFile.exists()){
+                		String videoPath = videoFile.getAbsolutePath();
+                		System.out.println(videoPath);
+                    	String audioPath = audioFile.getAbsolutePath();
+                    	System.out.println(audioPath);
+                    		
+                    		int returnVal=save.showSaveDialog(null);
+                    		if(returnVal== JFileChooser.APPROVE_OPTION){
+                    			String path=save.getSelectedFile().getPath();
+                    		wait= new Message_Wait();
+                    		VideoProcesser vp = new VideoProcesser("ffmpeg -y -i " + videoPath + " -i " + audioPath + " -filter_complex amix=inputs=2 "+path);
+                    		vp.execute();
+                    		contentPane.setVisible(false);
+                    		
+                    		}
+            		}
+        		}
             	
             	
             	
