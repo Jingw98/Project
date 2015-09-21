@@ -69,13 +69,16 @@ JTextField videoPath,mp3Path;
             	int returnVal=save.showSaveDialog(null);
             		if(returnVal== JFileChooser.APPROVE_OPTION){
             		wait= new Message_Wait();
-                		
-                		VideoProcesser vp = new VideoProcesser("ffmpeg -y -i " + videoPath + " -i " + audioPath + " -map 0:v -map 1:a ./video.mp4 ");
+                		String path=save.getSelectedFile().getPath();
+                		System.out.println(path);
+                		VideoProcesser vp = new VideoProcesser("ffmpeg -y -i " + videoPath + " -i " + audioPath + " -map 0:v -map 1:a " + path );
                 		vp.execute();
+                		contentPane.setVisible(false);
             		}
                 		
 
             	}
+            	
             	
             	
             	
@@ -95,9 +98,12 @@ JTextField videoPath,mp3Path;
                 		
                 		int returnVal=save.showSaveDialog(null);
                 		if(returnVal== JFileChooser.APPROVE_OPTION){
+                			String path=save.getSelectedFile().getPath();
                 		wait= new Message_Wait();
-                		VideoProcesser vp = new VideoProcesser("ffmpeg -y -i " + videoPath + " -i " + audioPath + " -filter_complex amix=inputs=2 ./video.mp4 ");
+                		VideoProcesser vp = new VideoProcesser("ffmpeg -y -i " + videoPath + " -i " + audioPath + " -filter_complex amix=inputs=2 "+path);
                 		vp.execute();
+                		contentPane.setVisible(false);
+                		
                 		}
             	}
             	
