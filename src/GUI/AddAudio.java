@@ -10,13 +10,14 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
 
 import main.Player;
 import Function.CallBash;
@@ -54,6 +55,7 @@ public class AddAudio extends JFrame {
 			}
 		});
 		btnOverlap.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (videoPath.getText().length() == 0
@@ -121,6 +123,12 @@ public class AddAudio extends JFrame {
 
 			}
 		});
+
+
+            		
+		
+           
+		
 
 		butPanel.add(btnOverlay);
 		butPanel.add(btnOverlap);
