@@ -18,10 +18,9 @@ public class Message_Wait extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	
+	//A pop-up window to show the message while generating video file
 	public Message_Wait() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		//setBounds(100, 100, 300, 150);
 		setSize(300,150);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

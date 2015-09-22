@@ -1,6 +1,9 @@
 package Function;
 
+import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+
 public class Time {
+	//Transfer time from second format(s) to runtime format(hh:mm:ss)
 	public static String secondToRuntime(int time) {
 		StringBuffer buffer = new StringBuffer();
 		if (time >= 3600) {
@@ -32,7 +35,8 @@ public class Time {
 		}
 		return buffer.toString();
 	}
-
+	
+	//Transfer time from runtime format(hh:mm:ss) to second format(s)
 	public static int runtimeToSecond(String str) {
 		String[] hms = str.trim().split(":");
 		if (hms.length != 3) {
@@ -42,7 +46,8 @@ public class Time {
 				* 60 + Integer.valueOf(hms[2]);
 		return time;
 	}
-
+	
+	//Get the total time of video file
 	public static String setTotalTime(int time) {
 		int t = time / 1000;
 		int hours = t / 3600;
@@ -56,10 +61,9 @@ public class Time {
 			s = "0" + Integer.toString(seconds);
 		}
 
-		return "0" + hours + ":" + m + ":" + s;
-		// move.setMaximum((
-		// mediaPlayerComponent).getMediaPlayer().getLength());
-
+	return	 "0" + hours + ":" + m + ":" + s;
+		
 	}
 
+	
 }

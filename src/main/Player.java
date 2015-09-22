@@ -64,7 +64,6 @@ public class Player {
 	int timerCondition = 1;
 	String totalTime = "00:00:00";
 	String playTime = "00:00:00";
-	// int width;
 	private EmbeddedMediaPlayerComponent mediaPlayerComponent;
 
 	public Player() throws IOException {
@@ -86,14 +85,15 @@ public class Player {
 			}
 		});
 		FileOperation.initialPath(stdoutBuffered);
-
+		
+		//Initialize working directory
 		try {
 			currentDir = FileOperation.setCurrentDir(stdoutBuffered);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+		
+		//Initialize window size
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 
@@ -152,9 +152,12 @@ public class Player {
 		frame.setContentPane(contentPane);
 		frame.setVisible(true);
 	}
-
+	
+	//Volume features
 	private JPanel volumePanel() {
 		JPanel panelVolume = new JPanel();
+		
+		//Mute Button
 		mute = new JButton();
 		mute.addActionListener(new ActionListener() {
 			@Override
@@ -174,6 +177,8 @@ public class Player {
 		mute.setEnabled(false);
 		panelVolume.add(mute);
 		setButton(mute, "6.png");
+		
+		//Volume control
 		voice = new JSlider(0, 100, 0);
 		voice.setOpaque(false);
 		voice.setPreferredSize(new Dimension(120, 20));
@@ -197,8 +202,10 @@ public class Player {
 		panelVolume.add(voice);
 		return panelVolume;
 	}
-
+	
+	//Playtime features
 	private JLabel time() {
+		//Show the playtime and total time of the video
 		videoTime = new JLabel();
 		videoTime.setText(playTime + " / " + totalTime);
 		videoTimer = new Timer(100, new ActionListener() {
@@ -214,7 +221,6 @@ public class Player {
 					sliderSkip = false;
 					move.setValue((int) mediaPlayerComponent.getMediaPlayer()
 							.getTime());
-					// System.out.println(mediaPlayerComponent.getMediaPlayer().getTime()+"mediaPlayerComponent.getMediaPlayer().getTime()");
 					sliderSkip = true;
 				}
 
@@ -222,10 +228,12 @@ public class Player {
 		});
 		return videoTime;
 	}
-
+	
+	//festival related features
 	private JPanel feativalPanel() {
-		// text field and button in festival panel
 		JPanel panelFestival = new JPanel();
+		
+		//Textfield for text input
 		textField = new JTextField();
 		textField.addActionListener(new ActionListener() {
 			@Override
@@ -265,8 +273,9 @@ public class Player {
 				textField.setText("");
 			}
 		});
-
 		textField.setPreferredSize(new Dimension(frame.getWidth() - 120, 20));
+		
+		//Save the festival audio file as MP3 file
 		festival = new JButton();
 		festival.addActionListener(new ActionListener() {
 			@Override
@@ -280,7 +289,7 @@ public class Player {
 				fileSelector.showSaveDialog(null);
 				directoryFile = fileSelector.getSelectedFile();
 				String directoryPath = directoryFile.getAbsolutePath();
-
+				
 				try {
 					CallBash.callBashVoid("mv ./.soundFile/audio.mp3 "
 							+ directoryPath);
@@ -300,9 +309,12 @@ public class Player {
 
 		return panelFestival;
 	}
-
+	
+	//Basic features
 	private JPanel functionPanel() {
 		panelFunction = new JPanel();
+		
+		//Stop
 		stop = new JButton();
 		stop.addActionListener(new ActionListener() {
 			@Override
@@ -322,7 +334,8 @@ public class Player {
 		});
 		stop.setEnabled(false);
 		panelFunction.add(stop);
-
+		
+		//Fast backward(rewind)
 		backward = new JButton();
 		backward.addActionListener(new ActionListener() {
 			@Override
@@ -350,9 +363,9 @@ public class Player {
 
 		backward.setEnabled(false);
 		panelFunction.add(backward);
-
+		
+		//Play, pause and resume
 		play = new JButton();
-
 		play.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -382,7 +395,8 @@ public class Player {
 		});
 		play.setEnabled(false);
 		panelFunction.add(play);
-
+		
+		//Fast forward(skip)
 		forward = new JButton();
 		forward.addActionListener(new ActionListener() {
 			@Override
@@ -408,13 +422,14 @@ public class Player {
 		forward.setEnabled(false);
 		panelFunction.add(forward);
 
-		// panelFunction.setOpaque(false);
 
 		return panelFunction;
 
 	}
 
+	//Progress bar
 	private JSlider moveSlider() {
+		//Progress bar relate to the playtime
 		final JSlider move = new JSlider();
 		move.setValue(0);
 		move.setEnabled(true);
@@ -422,12 +437,9 @@ public class Player {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
 				move.setUI(new MetalSliderUI() {
 					protected void scrollDueToClickInTrack(int direction) {
 						if (mediaPlayerComponent.getMediaPlayer() != null) {
-							// int totalTime =
-							// Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getLength()));
 							int moveValue = move.getValue();
 							if (move.getOrientation() == JSlider.HORIZONTAL) {
 								moveValue = this.valueForXPosition(move
@@ -483,7 +495,9 @@ public class Player {
 
 	}
 
+	//Menu bars
 	private JMenuBar menuBar() {
+		//Add menu bars
 		JMenuBar menubar = new JMenuBar();
 
 		JMenu menu1 = new JMenu("File");
@@ -495,7 +509,7 @@ public class Player {
 		JMenuItem item1 = new JMenuItem("Open File");
 		JMenuItem item2 = new JMenuItem("Add Audio");
 		
-		
+		//Open video file
 		item1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -504,13 +518,13 @@ public class Player {
 							"Video File", "avi", "mp4"),
 							JFileChooser.FILES_ONLY, "video file"));
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				mediaPlayerComponent.getMediaPlayer().mute(false);
 			}
 		});
 		
+		//Merge video and audio, generate a new file
 		item2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -518,7 +532,6 @@ public class Player {
 			
 		}
 	});
-//((Object) menu1).setDefaultLightWeightPopupEnabled(false);
 		menu1.add(item1);
 		menu2.add(item2);
 	
@@ -527,6 +540,7 @@ public class Player {
 
 	}
 
+	//Play video method
 	private void playVideo(File selectedFile) throws IOException {
 
 		if (selectedFile.exists()) {
@@ -538,8 +552,6 @@ public class Player {
 			mediaPlayerComponent.getMediaPlayer().setVolume(
 					voice.getValue() * 2);
 			playTime = "00:00:00";
-			//Time.setTotalTime((int) mediaPlayerComponent.getMediaPlayer()
-				//	.getLength());
 			totalTime=Time.setTotalTime((int) mediaPlayerComponent.getMediaPlayer().getLength());
 			move.setMaximum((int) ( mediaPlayerComponent).getMediaPlayer().getLength());
 			videoTimer.start();
@@ -549,7 +561,7 @@ public class Player {
 	}
 
 	
-
+	//Set the icon of buttons
 	private void setButton(JButton b, String dir) {
 		ImageIcon img = new ImageIcon(System.getProperty("user.dir") + "/res/"
 				+ dir);
@@ -560,7 +572,8 @@ public class Player {
 		b.setFocusPainted(false);
 		b.setOpaque(false);
 	}
-
+	
+	//Active the buttons's feature
 	private void enableButtons() {
 		play.setEnabled(true);
 		setButton(play, "4.png");

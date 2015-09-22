@@ -28,12 +28,13 @@ public class CallBash {
 		return process;
 	}
 	
+	// Execute bash command and return nothing
 	public static void callBashVoid(String cmd) throws IOException{
 		ProcessBuilder builder =new ProcessBuilder("/bin/bash", "-c", cmd);
 		Process process = builder.start();
 	}
 	
-	
+	// Execute bash command  and wait for the process done
 	public static void callBashVoidWait(String cmd) throws IOException, InterruptedException{
 		
 		ProcessBuilder builder =new ProcessBuilder("/bin/bash", "-c", cmd);
