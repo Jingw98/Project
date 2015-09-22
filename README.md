@@ -18,6 +18,8 @@ Volume: Change the volume of the player.
 
 
 
+
+
 Speech function:
 
 Convert text to speech: Type the words in the bottom text field and press ENTER. And the input text will be heard be played by player. After that a MP3 file of speech can be saved to selected folder. The save path can be changed by press the save button beside the text field.
