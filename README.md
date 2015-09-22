@@ -1,4 +1,4 @@
-  === Prototype of VIDIVOX  ===
+  == Prototype of VIDIVOX  ==
 Contributors: Mincheng Mu(mmu119)  Jing Wang(jwan501)
 
 The prototype is a video player with additional functions of convert text to speech and editing video.
