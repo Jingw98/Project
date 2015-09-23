@@ -20,25 +20,22 @@ public class Message_Wait extends JFrame {
 	 */
 	//A pop-up window to show the message while generating video file
 	public Message_Wait() {
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setSize(300,150);
+		setBounds(300, 70, 450, 150);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
 		
 		
-		JLabel lblNewLabel = new JLabel("Generating video file");
+		
+		JLabel lblNewLabel = new JLabel("Generating video file"
+				+ "Please wait");
 		lblNewLabel.setBounds(0, 11, 284, 62);
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblNewLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel("Please wait");
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1.setBounds(0, 48, 284, 39);
-		contentPane.add(lblNewLabel_1);
-		contentPane.setLayout(null);
+		
+		setContentPane(contentPane);
 		setVisible(true);
 	}
 

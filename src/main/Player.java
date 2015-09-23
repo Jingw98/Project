@@ -444,7 +444,7 @@ public class Player {
 							if (move.getOrientation() == JSlider.HORIZONTAL) {
 								moveValue = this.valueForXPosition(move
 										.getMousePosition().x);
-								System.out.println(moveValue);
+								
 							}
 							move.setValue(moveValue);
 							mediaPlayerComponent.getMediaPlayer().setTime(
@@ -471,6 +471,11 @@ public class Player {
 					playTime = Time.secondToRuntime(Integer.parseInt(Long
 							.toString(mediaPlayerComponent.getMediaPlayer()
 									.getTime())) / 1000);
+					
+					move.setValue(moveValue);
+					System.out.println(moveValue);
+					
+				
 				} else {
 					move.setValue(0);
 				}
