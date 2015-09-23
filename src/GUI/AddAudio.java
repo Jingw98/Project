@@ -32,6 +32,7 @@ JTextField videoPath,mp3Path;
  JFrame wait;
  File defaultPath;
  JFileChooser save ;
+ private File mergedVideo;
 
 	
 	//A pop-up window for "Merge video and audio, generate new file" feature
@@ -74,6 +75,7 @@ JTextField videoPath,mp3Path;
 
 				} else {
 					if (videoFile.exists() && audioFile.exists()) {
+						Player.disableMenubar();
 						String videoPath = videoFile.getAbsolutePath();
 						System.out.println(videoPath);
 						String audioPath = audioFile.getAbsolutePath();
@@ -89,6 +91,7 @@ JTextField videoPath,mp3Path;
 											+ path);
 							vp.execute();
 							setVisible(false);
+							mergedVideo = new File(path);
 						}
 					}
 
@@ -110,6 +113,7 @@ JTextField videoPath,mp3Path;
 
 				} else {
 					if (videoFile.exists() && audioFile.exists()) {
+						Player.disableMenubar();
 						String videoPath = videoFile.getAbsolutePath();
 						System.out.println(videoPath);
 						String audioPath = audioFile.getAbsolutePath();
@@ -126,8 +130,10 @@ JTextField videoPath,mp3Path;
 											+ path);
 							vp.execute();
 							setVisible(false);
-
+							mergedVideo = new File(path);
 						}
+						
+						
 					}
 				}
 
@@ -219,9 +225,11 @@ JTextField videoPath,mp3Path;
 	 private void generateDone() throws IOException{
 	    	wait.setVisible(false);
 			wait.dispose();
+			Player.activeMenubar();
 			JOptionPane.showMessageDialog(contentPane,
-					"Combination Finished!", null,
+					"The video has been geneated successfully!", null,
 					JOptionPane.INFORMATION_MESSAGE);
+			Player.playVideo(mergedVideo);
 	    }
 	
 }

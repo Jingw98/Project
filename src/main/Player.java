@@ -42,7 +42,7 @@ import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 public class Player {
 	static JFrame frame;
 	JPanel contentPane;
-	JMenuBar menuBar;
+	static JMenuBar menuBar;
 	public static JFileChooser fileSelector;
 	BufferedReader stdoutBuffered;
 	public static File currentDir;
@@ -50,11 +50,18 @@ public class Player {
 	static String mediaPath="";
 	JPanel panelFestival;
 	JPanel panelSouth;
-	JSlider move, voice;
+	static JSlider move;
+	static JSlider voice;
 	
 	JPanel panelFunction, panelVolume;
-	JButton stop, backward, forward, play, mute, festival;
-	Timer timer, forwardTimer, backwardTimer, videoTimer;
+	static JButton stop;
+	static JButton backward;
+	static JButton forward;
+	static JButton play;
+	static JButton mute;
+	JButton festival;
+	Timer timer, forwardTimer, backwardTimer;
+	static Timer videoTimer;
 	int forwardSpeed = 500, backwardSpeed = -500, moveValue;
 	JLabel videoTime;
 	JTextField textField;
@@ -62,9 +69,9 @@ public class Player {
 	boolean sliderSkip = true;
 
 	int timerCondition = 1;
-	String totalTime = "00:00:00";
-	String playTime = "00:00:00";
-	private EmbeddedMediaPlayerComponent mediaPlayerComponent;
+	static String totalTime = "00:00:00";
+	static String playTime = "00:00:00";
+	private static EmbeddedMediaPlayerComponent mediaPlayerComponent;
 
 	public Player() throws IOException {
 		initialize();
@@ -255,12 +262,12 @@ public class Player {
 						if (word == 0) {
 							// show error window
 							JOptionPane.showMessageDialog(contentPane,
-									"Words can not be empty!", null,
+									"Input can not be empty!", null,
 									JOptionPane.INFORMATION_MESSAGE);
 						}
 						else{
 						JOptionPane.showMessageDialog(contentPane,
-								"Words can not be over 40!", null,
+								"Input can not be over 40 words!", null,
 								JOptionPane.INFORMATION_MESSAGE);
 						}
 						festival.setEnabled(false);
@@ -282,7 +289,7 @@ public class Player {
 			public void actionPerformed(ActionEvent e) {
 				File directoryFile;
 				fileSelector.setSelectedFile(null);
-				fileSelector.setDialogTitle("Please select the save directory");
+				fileSelector.setDialogTitle("Please select the saving directory");
 				fileSelector
 						.setFileSelectionMode(JFileChooser.SAVE_DIALOG | JFileChooser.DIRECTORIES_ONLY);  
 				
@@ -546,7 +553,7 @@ public class Player {
 	}
 
 	//Play video method
-	private void playVideo(File selectedFile) throws IOException {
+	public static void playVideo(File selectedFile) throws IOException {
 
 		if (selectedFile.exists()) {
 			videoFile = selectedFile;
@@ -561,13 +568,14 @@ public class Player {
 			move.setMaximum((int) ( mediaPlayerComponent).getMediaPlayer().getLength());
 			videoTimer.start();
 			enableButtons();
+			frame.setTitle(mediaPath);
 		}
 
 	}
 
 	
 	//Set the icon of buttons
-	private void setButton(JButton b, String dir) {
+	private static void setButton(JButton b, String dir) {
 		ImageIcon img = new ImageIcon(System.getProperty("user.dir") + "/res/"
 				+ dir);
 		b.setIcon(img);
@@ -579,7 +587,7 @@ public class Player {
 	}
 	
 	//Active the buttons's feature
-	private void enableButtons() {
+	private static void enableButtons() {
 		play.setEnabled(true);
 		setButton(play, "4.png");
 		backward.setEnabled(true);
@@ -603,6 +611,17 @@ public class Player {
 		return dir;
 		
 	}
+	
+	public static void disableMenubar(){
+		menuBar.getMenu(0).setEnabled(false);
+		menuBar.getMenu(1).setEnabled(false);
+	}
+	
+	public static void activeMenubar(){
+		menuBar.getMenu(0).setEnabled(true);
+		menuBar.getMenu(1).setEnabled(true);
+	}
+	
 	
 	
 }
