@@ -63,7 +63,7 @@ public class Player {
 	Timer timer, forwardTimer, backwardTimer;
 	static Timer videoTimer;
 	int forwardSpeed = 500, backwardSpeed = -500, moveValue;
-	JLabel videoTime;
+	static JLabel videoTime;
 	JTextField textField;
 
 	boolean sliderSkip = true;
@@ -326,17 +326,14 @@ public class Player {
 		stop.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mediaPlayerComponent.getMediaPlayer().stop();
+				stopVideo();
 				stop.setEnabled(false);
 				play.setEnabled(false);
 				backward.setEnabled(false);
 				forward.setEnabled(false);
 				mute.setEnabled(false);
 				festival.setEnabled(false);
-				totalTime = "00:00:00";
-				playTime = "00:00:00";
-				videoTime.setText(playTime + " / " + totalTime);
-				move.setValue(0);
+				
 			}
 		});
 		stop.setEnabled(false);
@@ -535,6 +532,7 @@ public class Player {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					
 					playVideo(FileOperation.chooseFile(fileSelector,new FileNameExtensionFilter(
 							"Video File", "avi", "mp4"),
 							JFileChooser.FILES_ONLY, "video file"));
@@ -565,6 +563,7 @@ public class Player {
 	public static void playVideo(File selectedFile) throws IOException {
 
 		if (selectedFile.exists()) {
+			stopVideo();
 			videoFile = selectedFile;
 			 mediaPath = videoFile.getAbsolutePath();
 
@@ -580,6 +579,15 @@ public class Player {
 			frame.setTitle(mediaPath);
 		}
 
+	}
+	
+	public static void stopVideo(){
+		mediaPlayerComponent.getMediaPlayer().stop();
+		totalTime = "00:00:00";
+		playTime = "00:00:00";
+		videoTime.setText(playTime + " / " + totalTime);
+		move.setValue(0);
+		
 	}
 
 	
