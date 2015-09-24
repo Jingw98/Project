@@ -445,9 +445,10 @@ public class Player {
 		 move.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent arg0) {
-					
+					if (sliderSkip){
 						mediaPlayerComponent.getMediaPlayer().setTime(move.getValue());
 						playTime = Time.secondToRuntime(Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getTime())) /1000) ;
+					}
 						
 				}
 		    });
@@ -463,7 +464,6 @@ public class Player {
 							if (move.getOrientation() == JSlider.HORIZONTAL) {
 								moveValue = this.valueForXPosition(move
 										.getMousePosition().x);
-								
 							}
 							move.setValue(moveValue);
 							mediaPlayerComponent.getMediaPlayer().setTime(
