@@ -35,3 +35,6 @@ Execute in terminal with command : java -jar VIDIVOX.jar
 
       == Attention ==
 The res folder which includes all the button picture must be in the same folder of jar file.
+
+     ==GitHub==
+     https://github.com/Jingw98/Project
