@@ -364,6 +364,7 @@ public class Player {
 					}
 				}
 				backwardTimer.start();
+				videoTimer.start();
 
 			}
 		});
@@ -424,6 +425,7 @@ public class Player {
 					}
 				}
 				forwardTimer.start();
+				videoTimer.start();
 			}
 		});
 		forward.setEnabled(false);
@@ -440,6 +442,16 @@ public class Player {
 		final JSlider move = new JSlider();
 		move.setValue(0);
 		move.setEnabled(true);
+		 move.addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent arg0) {
+					
+						mediaPlayerComponent.getMediaPlayer().setTime(move.getValue());
+						playTime = Time.secondToRuntime(Integer.parseInt(Long.toString(mediaPlayerComponent.getMediaPlayer().getTime())) /1000) ;
+						
+				}
+		    });
+		
 		move.addMouseListener(new MouseListener() {
 
 			@Override
@@ -456,12 +468,11 @@ public class Player {
 							move.setValue(moveValue);
 							mediaPlayerComponent.getMediaPlayer().setTime(
 									moveValue);
-						} else {
-							move.setValue(0);
-						}
+						} 
 					}
 				});
 			}
+			
 
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -475,16 +486,11 @@ public class Player {
 				if (mediaPlayerComponent.getMediaPlayer() != null) {
 					mediaPlayerComponent.getMediaPlayer().setTime(
 							move.getValue());
-					playTime = Time.secondToRuntime(Integer.parseInt(Long
-							.toString(mediaPlayerComponent.getMediaPlayer()
-									.getTime())) / 1000);
 					
-					move.setValue(moveValue);
-					System.out.println(moveValue);
+					
+					
 					
 				
-				} else {
-					move.setValue(0);
 				}
 
 			}
@@ -502,6 +508,9 @@ public class Player {
 			}
 
 		});
+		
+		
+		
 
 		return move;
 
